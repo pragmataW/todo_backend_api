@@ -7,7 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pragmataW/to-do/endpoints"
+	"github.com/pragmataW/to-do/instances"
 )
 
 func RequireAuth(c *fiber.Ctx) error {
@@ -22,7 +22,7 @@ func RequireAuth(c *fiber.Ctx) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method : %v", token.Header["alg"])
 		}
-		return []byte(endpoints.JwtPass), nil
+		return []byte(instances.JwtPass), nil
 	})
 	
 	if err != nil{

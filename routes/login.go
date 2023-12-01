@@ -1,4 +1,4 @@
-package endpoints
+package routes
 
 import (
 	"database/sql"
@@ -11,12 +11,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pragmataW/to-do/db"
+	"github.com/pragmataW/to-do/instances"
 )
 
 func HandleLogin(c *fiber.Ctx) error {
 	//* Connect to Db
-	var	userInput	LoginUser
-	var	user		User
+	var	userInput	instances.LoginUser
+	var	user		instances.User
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s/%s", db.DbUsername, db.DbPassword, db.DbHost, db.DbName))
 	if err != nil {
 		log.Println("Database Error: ", err)
@@ -50,7 +51,7 @@ func HandleLogin(c *fiber.Ctx) error {
 		"exp": time.Now().Add(time.Hour *72).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenizedString, err := token.SignedString([]byte(JwtPass))
+	tokenizedString, err := token.SignedString([]byte(instances.JwtPass))
 	if err != nil{
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

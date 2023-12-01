@@ -1,4 +1,4 @@
-package endpoints
+package routes
 
 import (
 	"net/http"

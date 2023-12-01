@@ -1,4 +1,4 @@
-package endpoints
+package routes
 
 import (
 	"database/sql"
@@ -8,12 +8,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pragmataW/to-do/db"
+	"github.com/pragmataW/to-do/instances"
 )
 
-func usernameControl(user User, db *sql.DB) error {
+func usernameControl(user instances.User, db *sql.DB) error {
 	length := len(user.Username)
 	if length > 20 || length < 8{
-		unameErr := UsernameError{Message: "Username must be maximum 20 character or minimum 8 character",}
+		unameErr := instances.UsernameError{Message: "Username must be maximum 20 character or minimum 8 character",}
 		return unameErr
 	}
 
@@ -23,23 +24,23 @@ func usernameControl(user User, db *sql.DB) error {
 	}
 
 	if row.Next(){
-		unameErr := UsernameError{Message: "Username must be unique",}
+		unameErr := instances.UsernameError{Message: "Username must be unique",}
 		return unameErr
 	}
 
 	return nil
 }
 
-func  passwordControl(user User) error {
+func  passwordControl(user instances.User) error {
 	length := len(user.Password)
 	if length < 8{
-		passErr := PasswordError{Message: "Password must be minimum 8 character",}
+		passErr := instances.PasswordError{Message: "Password must be minimum 8 character",}
 		return passErr
 	}
 	return nil
 }
 
-func registerControl(user User, db *sql.DB) error {
+func registerControl(user instances.User, db *sql.DB) error {
 	err := usernameControl(user, db)
 	if err != nil{
 		return err
@@ -52,7 +53,7 @@ func registerControl(user User, db *sql.DB) error {
 }
 
 func HandleRegister(c *fiber.Ctx) error {
-	var user User
+	var user instances.User
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s/%s", db.DbUsername, db.DbPassword, db.DbHost, db.DbName))
 	if err != nil{
 		log.Println("Database Error: ", err)
@@ -68,7 +69,7 @@ func HandleRegister(c *fiber.Ctx) error {
 
 	err = registerControl(user, db)
 	switch err.(type){
-	case UsernameError, PasswordError:
+	case instances.UsernameError, instances.PasswordError:
 		log.Printf("%s", err)
 		return c.Status(500).SendString(fmt.Sprintf("%s", err))
 	case nil:

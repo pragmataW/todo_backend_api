@@ -1,4 +1,4 @@
-package endpoints
+package routes
 
 import (
 	"database/sql"
@@ -10,10 +10,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pragmataW/to-do/db"
+	"github.com/pragmataW/to-do/instances"
 )
 
 func AddTodos(c *fiber.Ctx) error {
-	var todo Todos
+	var todo instances.Todos
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s/%s", db.DbUsername, db.DbPassword, db.DbHost, db.DbName))
 	if err != nil{
@@ -39,7 +40,7 @@ func AddTodos(c *fiber.Ctx) error {
 
 func GetTodos(c *fiber.Ctx) error {
 	username := c.Locals("username")
-	var todos []Todos
+	var todos []instances.Todos
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s/%s", db.DbUsername, db.DbPassword, db.DbHost, db.DbName))
 	if err != nil{
@@ -55,7 +56,7 @@ func GetTodos(c *fiber.Ctx) error {
 	}
 
 	for rows.Next(){
-		var todo Todos
+		var todo instances.Todos
 		err = rows.Scan(&todo.Id, &todo.Title, &todo.Content)
 		if err != nil {
 			log.Println(err)
@@ -69,7 +70,7 @@ func GetTodos(c *fiber.Ctx) error {
 func GetTodo(c *fiber.Ctx) error {
 	username := c.Locals("username")
 	id := c.Params("id")
-	var todo Todos
+	var todo instances.Todos
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s/%s", db.DbUsername, db.DbPassword, db.DbHost, db.DbName))
 	if err != nil{
